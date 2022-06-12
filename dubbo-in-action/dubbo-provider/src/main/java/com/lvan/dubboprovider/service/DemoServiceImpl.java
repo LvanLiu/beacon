@@ -17,9 +17,8 @@ public class DemoServiceImpl implements DemoService {
     @Override
     public String sayHello(String name) {
 
-        String replyMsg = CharSequenceUtil.format("Hello {} , request from consumer: {}",
-                name, RpcContext.getServiceContext().getRemoteAddress());
-        log.info(replyMsg);
-        return replyMsg;
+        RpcContext.getServiceContext().getLocalPort();
+        return CharSequenceUtil.format("Hello {} , request from consumer: {}, dubbo port:{}",
+                name, RpcContext.getServiceContext().getRemoteAddress(), RpcContext.getServiceContext().getLocalPort());
     }
 }
