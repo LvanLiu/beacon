@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * 解决 SimpleDateFormat 线程不安全的问题
  * @author Qibin Liu
  * @date 2022-06-17 9:32
  */
