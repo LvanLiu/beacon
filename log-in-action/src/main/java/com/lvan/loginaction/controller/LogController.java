@@ -10,13 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Qibin Liu
  * @since 2022-07-11 20:29
  */
-@Slf4j
+@Slf4j(topic = "com.lvan")
 @RestController
 @RequestMapping("log")
 public class LogController {
 
     @PostMapping("info")
     public void printInfoLog(@RequestParam String msg) {
-        log.info("receive:{}", msg);
+        log.info("receive info log:{}", msg);
+    }
+
+    @PostMapping("error")
+    public void printErrorLog(@RequestParam String msg) {
+        log.error("receive error log:{}", msg);
     }
 }
