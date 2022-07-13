@@ -24,4 +24,10 @@ public class LogController {
     public void printErrorLog(@RequestParam String msg) {
         log.error("receive error log:{}", msg);
     }
+
+    @PostMapping("sys/error")
+    public void printSysErrorLog(@RequestParam Integer num) {
+        // 模拟系统异常
+        int result = 5 / num;
+    }
 }

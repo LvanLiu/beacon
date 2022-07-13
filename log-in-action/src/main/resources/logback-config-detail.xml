@@ -1,0 +1,121 @@
+<!--
+    scan: 当此属性设置为 true 时，配置文件如果发生改变，将会被重新加载，默认值为 true。
+    scanPeriod: 设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当 scan 为 true 时，此属性生效。默认的时间间隔为1分钟。
+    debug: 当此属性设置为 true 时，将打印出 logback 内部日志信息，实时查看 logback 运行状态。默认值为 false。
+-->
+<configuration scan="true" scanPeriod="10 seconds" debug="false">
+
+    <springProperty scope="context" name="HOME_LOG" source="logging.file.path"/>
+
+    <!-- ConsoleAppender 把日志输出到控制台 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!--对日志进行格式化处理-->
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!-- 把日志添加到文件 -->
+    <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 级别过滤器，根据日志级别进行过滤。如果日志级别等于配置级别，过滤器会根据onMath(用于配置符合过滤条件的操作) 和 onMismatch(用于配置不符合过滤条件的操作)接收或拒绝日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <!-- 如果命中就禁止这条日志 -->
+            <onMatch>DENY</onMatch>
+            <!-- 如果没有命中就使用这条规则 -->
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <!-- 被写入的文件名，可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建，没有默认值 -->
+        <file>${HOME_LOG}/info.log</file>
+        <!-- 如果是 true，日志被追加到文件结尾，如果是 false，清空现存文件，默认是true -->
+        <append>true</append>
+        <!--
+            rollingPolicy 这个子标签用来描述滚动策略的。这个只有 appender 的 class 是 RollingFileAppender 时才需要配置。这个也会涉及文件的移动和重命名
+        -->
+        <!--基于时间的滚动，可以是一天也可以是一个月，这个较为常用，通常我们可以设置一天生成一个新的文件，很好归纳，统计-->
+        <!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+        <!--            &lt;!&ndash; log文件命名规则，通常使用%d来按天或按月输出 &ndash;&gt;-->
+        <!--            <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>-->
+        <!--            &lt;!&ndash; 日志保留天数，超过该天数的历史日志文件将会被logback异步删除 &ndash;&gt;-->
+        <!--            <maxHistory>30</maxHistory>-->
+        <!--            &lt;!&ndash; 所有的归档日志的大小。当超过限制时，会删掉旧的归档日志 &ndash;&gt;-->
+        <!--            <totalSizeCap>3GB</totalSizeCap>-->
+        <!--        </rollingPolicy>-->
+
+        <!-- 按大小和时间滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${HOME_LOG}/archived/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- each archived file, size max 10MB -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- total size of all archive files, if total size > 20GB, it will delete old archived file -->
+            <totalSizeCap>20GB</totalSizeCap>
+            <!-- 60 days to keep -->
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+
+        <!--FixedWindowRollingPolicy(以固定的算法策略生成滚动文件 不常用)-->
+        <!---->
+        <!--        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">-->
+        <!--            <maxFileSize>5MB</maxFileSize>-->
+        <!--        </triggeringPolicy>-->
+        <!--
+            对记录事件进行格式化。它干了两件事：
+            1. 把日志信息转换成字节数组
+            2. 把字节数组写入到输出流
+            目前 encoder 只有 PatternLayoutEncoder 一种类型。
+        -->
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <!-- 编码 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--定义一个只打印 error 级别日志的 appender -->
+    <appender name="ERROR-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <!-- 过滤器，只记录 error 级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>error</level>
+        </filter>
+        <!-- 日志名称 -->
+        <file>${HOME_LOG}/error.log</file>
+        <!-- 每天生成一个日志文件，保存30天的日志文件 -->
+        <!-- 按大小和时间滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${HOME_LOG}/archived/error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- each archived file, size max 10MB -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- total size of all archive files, if total size > 20GB, it will delete old archived file -->
+            <totalSizeCap>20GB</totalSizeCap>
+            <!-- 60 days to keep -->
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <!-- 编码 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--
+        用来设置某一个包或者具体的某一个类的日志打印级别以及指定 appender
+        name        用来指定受此 logger 约束的某一个包或者具体的某一个类
+        level       用来设置打印级别（TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF），还有一个值 INHERITED 或者同义词 NULL，
+                    代表强制执行上级的级别。如果没有设置此属性，那么当前 logger 将会继承上级的级别
+        addtivity   用来描述是否向上级logger传递打印信息。默认是 true
+    -->
+    <logger name="com.lvan" level="info" additivity="false">
+        <!-- appender-ref 则是用来指定具体 appender 的 -->
+        <appender-ref ref="FILE-ROLLING"/>
+        <appender-ref ref="ERROR-ROLLING"/>
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
