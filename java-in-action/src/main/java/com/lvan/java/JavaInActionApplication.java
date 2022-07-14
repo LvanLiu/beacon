@@ -1,13 +1,15 @@
-package com.lvan.dubboconsumer;
+package com.lvan.java;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * @author Qibin Liu
+ * @since 2022-07-13 10:07
+ */
 @SpringBootApplication
-public class DubboConsumerApplication {
-
+public class JavaInActionApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DubboConsumerApplication.class, args);
+        SpringApplication.run(JavaInActionApplication.class, args);
     }
-
 }

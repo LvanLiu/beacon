@@ -1,13 +1,13 @@
-package com.lvan.dubboconsumer;
+package com.lvan.loginaction;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DubboConsumerApplication {
+public class LogInActionApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DubboConsumerApplication.class, args);
+        SpringApplication.run(LogInActionApplication.class, args);
     }
 
 }
