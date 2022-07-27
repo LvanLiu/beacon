@@ -23,6 +23,4 @@ public class PrometheusMonitorController {
         map.put("result", "hello prometheus");
         return map;
     }
-
-
 }
